@@ -1,7 +1,26 @@
-TheAlcoholic.playerWindow = {}
-TheAlcoholic.statsWindow = {}
+-- (c) 2024 - axxessdenied [Nick Slusarczyk]
 
-local players = {}
+TheAlcoholic.UI = {}
+TheAlcoholic.UI.playerWindow = {}
+TheAlcoholic.UI.statsWindow = {}
+TheAlcoholic.UI.visible = false
+
+TheAlcoholic.UI.player_cache = {}
+
+local function refreshStats()
+    TheAlcoholic.UI.statsWindow["stress"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicStress))
+    TheAlcoholic.UI.statsWindow["tolerance"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicTolerance))
+    TheAlcoholic.UI.statsWindow["threshold"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicThreshold))
+    TheAlcoholic.UI.statsWindow["withdrawal"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicWithdrawalSickness))
+    TheAlcoholic.UI.statsWindow["tolerance_penalty"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicTolerancePenalty))
+    TheAlcoholic.UI.statsWindow["poison"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicPoisonDamageTotal))
+    TheAlcoholic.UI.statsWindow["time_since_last_drink"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicTimeSinceLastDrink))
+    TheAlcoholic.UI.statsWindow["drinks_per_day"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicDrinksPerDay))
+    TheAlcoholic.UI.statsWindow["drinks_total"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicDrinksTotal))
+    TheAlcoholic.UI.statsWindow["has_withdrawal_sickness"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicHasWithdrawalSickness))
+    TheAlcoholic.UI.statsWindow["withdrawal_phase"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicWithdrawalPhase))
+    TheAlcoholic.UI.statsWindow["has_drank"]:setText(tostring(TheAlcoholic.UI.player_cache:getModData().AlcoholicHasDrank))
+end
 
 local function openStats(_, player)
     local playerObj = getSpecificPlayer(player)
@@ -10,129 +29,195 @@ local function openStats(_, player)
         return
     end
 
-    TheAlcoholic.statsWindow["stress"]:setText(tostring(playerObj:getModData().AlcoholicStress))
-    TheAlcoholic.statsWindow["tolerance"]:setText(tostring(playerObj:getModData().AlcoholicTolerance))
-    TheAlcoholic.statsWindow["threshold"]:setText(tostring(playerObj:getModData().AlcoholicThreshold))
-    TheAlcoholic.statsWindow["withdrawal"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalSickness))
-    TheAlcoholic.statsWindow["tolerance_penalty"]:setText(tostring(playerObj:getModData().AlcoholicTolerancePenalty))
-    TheAlcoholic.statsWindow["poison"]:setText(tostring(playerObj:getModData().AlcoholicPoisonDamageTotal))
-    TheAlcoholic.statsWindow["time_since_last_drink"]:setText(tostring(playerObj:getModData().AlcoholicTimeSinceLastDrink))
-    TheAlcoholic.statsWindow["drinks_per_day"]:setText(tostring(playerObj:getModData().AlcoholicDrinksPerDay))
-    TheAlcoholic.statsWindow["drinks_total"]:setText(tostring(playerObj:getModData().AlcoholicDrinksTotal))
-    TheAlcoholic.statsWindow["has_withdrawal_sickness"]:setText(tostring(playerObj:getModData().AlcoholicHasWithdrawalSickness))
-    TheAlcoholic.statsWindow["withdrawal_phase"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalPhase))
-    TheAlcoholic.statsWindow["has_drank"]:setText(tostring(playerObj:getModData().AlcoholicHasDrank))
-
-    TheAlcoholic.statsWindow:setPositionPixel(TheAlcoholic.playerWindow:getX() + TheAlcoholic.playerWindow:getWidth(), TheAlcoholic.playerWindow:getY())
-    TheAlcoholic.statsWindow:open()
+    TheAlcoholic.UI.player_cache = playerObj
+    refreshStats()
+    TheAlcoholic.UI.statsWindow:setPositionPixel(TheAlcoholic.UI.playerWindow:getX(), TheAlcoholic.UI.playerWindow:getY() + TheAlcoholic.UI.playerWindow:getHeight())
+    TheAlcoholic.UI.statsWindow:open()
 end
 
 local function closeStats()
-    TheAlcoholic.statsWindow:close()
+    TheAlcoholic.UI.statsWindow:close()
 end
 
-local function updateInfo()
-    if TheAlcoholic.playerWindow:getIsVisible() == false
+local function updatePlayers()
+    if TheAlcoholic.UI.visible == true
     then
-        for i = 0, getNumActivePlayers()-1 do
-            local player = getSpecificPlayer(i)
-            players[player:getName()] = i
+        local player1 = getSpecificPlayer(0)
+        local player2 = getSpecificPlayer(1)
+        local player3 = getSpecificPlayer(2)
+        local player4 = getSpecificPlayer(3)
+
+        local player1_str = "Player 1"
+        local player2_str = "Player 2"
+        local player3_str = "Player 3"
+        local player4_str = "Player 4"
+
+        if player1 then
+            player1_str = player1:getForname().." "..player1:getSurname()
         end
+
+        if player2 then
+            player2_str = player2:getForname().." "..player2:getSurname()
+        end
+
+        if player3 then
+            player3_str = player3:getForname().." "..player3:getSurname()
+        end
+
+        if player4 then
+            player4_str = player4:getForname().." "..player4:getSurname()
+        end
+
+        TheAlcoholic.UI.playerWindow["list"]:setItems({ [player1_str] = 0, [player2_str] = 1, [player3_str] = 2, [player4_str] = 3 })
     end
 end
 
 local function toggleAlcoholicGUI()
-    TheAlcoholic.playerWindow:toggle()
+    TheAlcoholic.UI.visible = not TheAlcoholic.UI.visible
+    updatePlayers()
+    TheAlcoholic.UI.playerWindow:toggle()
+end
+
+local function refresh_button_click()
+    TheAlcoholic.UI.statsWindow:close()
+    refreshStats()
+    TheAlcoholic.UI.statsWindow:open()
 end
 
 local function onCreateUI()
+    local players = {} 
     for i=0, 3 do
         local player_str = "Player "..(i+1)
         players[player_str] = i
     end
-    TheAlcoholic.playerWindow = NewUI()
-    TheAlcoholic.playerWindow:setTitle("Local players")
-    TheAlcoholic.playerWindow:setWidthPercent(0.15)
-    TheAlcoholic.playerWindow:setPositionPercent(0.35, 0.15)
-    TheAlcoholic.playerWindow:addScrollList("list", players)
+    TheAlcoholic.UI.playerWindow = NewUI()
+    TheAlcoholic.UI.playerWindow:setTitle("The Alcoholic: Local players")
+    TheAlcoholic.UI.playerWindow:setWidthPercent(0.10)
+    TheAlcoholic.UI.playerWindow:setPositionPercent(0.05, 0.25)
+    TheAlcoholic.UI.playerWindow:addScrollList("list", players)
+    TheAlcoholic.UI.playerWindow:nextLine()
+    TheAlcoholic.UI.playerWindow:addButton("close_button", "Close", toggleAlcoholicGUI)
+    TheAlcoholic.UI.playerWindow:setCollapse(true)
 
-    TheAlcoholic.playerWindow["list"]:setOnMouseDownFunction(_, openStats)
+    TheAlcoholic.UI.playerWindow["list"]:setOnMouseDownFunction(_, openStats)
 
-    TheAlcoholic.playerWindow:saveLayout()
+    TheAlcoholic.UI.playerWindow:saveLayout()
 
-    TheAlcoholic.statsWindow = NewUI()
-    TheAlcoholic.statsWindow:setTitle("Player Alcoholic Stats")
-    TheAlcoholic.statsWindow:isSubUIOf(TheAlcoholic.playerWindow)
-    TheAlcoholic.statsWindow:setWidthPercent(0.35)
+    TheAlcoholic.UI.statsWindow = NewUI()
+    TheAlcoholic.UI.statsWindow:setTitle("Player Alcoholic Stats")
+    TheAlcoholic.UI.statsWindow:isSubUIOf(TheAlcoholic.UI.playerWindow)
+    TheAlcoholic.UI.statsWindow:setWidthPercent(0.10)
+    TheAlcoholic.UI.statsWindow:setCollapse(true)
+
+    TheAlcoholic.UI.statsWindow:setDefaultLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
     
-    TheAlcoholic.statsWindow:addRichText("AlcoholicStressLevel", "Alcoholic Stress Level: ")
-    TheAlcoholic.statsWindow:addRichText("stress", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicStressLevel", "Alcoholic Stress Level: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicStressLevel"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("stress", "")
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:nextLine()
     
-    TheAlcoholic.statsWindow:addRichText("AlcoholicTolerance", "Alcoholic Tolerance: ")
-    TheAlcoholic.statsWindow:addRichText("tolerance", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicTolerance", "Alcoholic Tolerance: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicTolerance"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("tolerance", "")
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("AlcoholicThreshold", "Alcoholic Threshold: ")
-    TheAlcoholic.statsWindow:addRichText("threshold", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicThreshold", "Alcoholic Threshold: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicThreshold"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("threshold", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("WithdrawalSickness", "Withdrawal Sickness: ")
-    TheAlcoholic.statsWindow:addRichText("withdrawal", "")
-    TheAlcoholic.statsWindow:nextLine()
-    
-    TheAlcoholic.statsWindow:addRichText("AlcoholicTolerancePenalty", "Alcoholic Tolerance Penalty: ")
-    TheAlcoholic.statsWindow:addRichText("tolerance_penalty", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicTolerancePenalty", "Alcoholic Tolerance Penalty: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicTolerancePenalty"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("tolerance_penalty", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("AlcoholicPoisonLevel", "Alcoholic Poison Level: ")
-    TheAlcoholic.statsWindow:addRichText("poison", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicPoisonLevel", "Alcoholic Poison Level: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicPoisonLevel"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("poison", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("TimeSinceLastDrink", "Time Since Last Drink: ")
-    TheAlcoholic.statsWindow:addRichText("time_since_last_drink", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("TimeSinceLastDrink", "Time Since Last Drink: ")
+    TheAlcoholic.UI.statsWindow["TimeSinceLastDrink"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("time_since_last_drink", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("AlcoholicDrinksToday", "Alcoholic Drinks Today: ")
-    TheAlcoholic.statsWindow:addRichText("drinks_per_day", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicDrinksToday", "Alcoholic Drinks Today: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicDrinksToday"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("drinks_per_day", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("AlcoholicDrinksTotal", "Alcoholic Drinks Total: ")
-    TheAlcoholic.statsWindow:addRichText("drinks_total", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("AlcoholicDrinksTotal", "Alcoholic Drinks Total: ")
+    TheAlcoholic.UI.statsWindow["AlcoholicDrinksTotal"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("drinks_total", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("HasWithdrawalSickness", "Has Withdrawal Sickness: ")
-    TheAlcoholic.statsWindow:addRichText("has_withdrawal_sickness", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("WithdrawalPhase", "Withdrawal Phase: ")
+    TheAlcoholic.UI.statsWindow["WithdrawalPhase"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("withdrawal_phase", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("WithdrawalPhase", "Withdrawal Phase: ")
-    TheAlcoholic.statsWindow:addRichText("withdrawal_phase", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("HasWithdrawalSickness", "Has Withdrawal Sickness: ")
+    TheAlcoholic.UI.statsWindow["HasWithdrawalSickness"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("has_withdrawal_sickness", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addRichText("HasDrankAlcohol", "Has Drank Alcohol Last Nour: ")
-    TheAlcoholic.statsWindow:addRichText("has_drank", "")
-    TheAlcoholic.statsWindow:nextLine()
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("WithdrawalSickness", "Withdrawal Sickness: ")
+    TheAlcoholic.UI.statsWindow["WithdrawalSickness"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("withdrawal", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
 
-    TheAlcoholic.statsWindow:addButton("close_button", "Close", closeStats)
-    TheAlcoholic.statsWindow:addButton("close_all", "Close All", toggleAlcoholicGUI)
-    TheAlcoholic.statsWindow:saveLayout()
-    TheAlcoholic.statsWindow:close()
-    TheAlcoholic.playerWindow:close()
-    Events.OnTick.Remove(onCreateUI)
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:addRichText("HasDrankAlcohol", "Has Drank Alcohol Last Hour: ")
+    TheAlcoholic.UI.statsWindow["HasDrankAlcohol"]:setWidthPercent(0.07)
+    TheAlcoholic.UI.statsWindow:addRichText("has_drank", "")
+    TheAlcoholic.UI.statsWindow:addEmpty(_,_,_, 10)
+    TheAlcoholic.UI.statsWindow:setLineHeightPixel(getTextManager():getFontHeight(UIFont.Small))
+    TheAlcoholic.UI.statsWindow:nextLine()
+
+    TheAlcoholic.UI.statsWindow:addButton("refresh_button", "Refresh", refresh_button_click)
+    TheAlcoholic.UI.statsWindow:nextLine()   
+    TheAlcoholic.UI.statsWindow:addButton("close_button", "Close", closeStats)
+    TheAlcoholic.UI.statsWindow:addButton("close_all", "Close All", toggleAlcoholicGUI)
+    TheAlcoholic.UI.statsWindow:saveLayout()
+    TheAlcoholic.UI.statsWindow:close()
+    TheAlcoholic.UI.playerWindow:close()
 end
 
-function TheAlcoholic.onKeyPressed(key)
-    if key == "T"
-    then
-        toggleAlcoholicGUI()
-    end
-end
-
-
-Events.OnKeyPressed.Add(TheAlcoholic.onKeyPressed)
-
-function TheAlcoholic.onRightClick(player, context, items)
-    print("TheAlcoholic.onRightClick")
+function TheAlcoholic.UI.onRightClick(player, context, items)
     items = ISInventoryPane.getActualItems(items)
     local has_displayed = false
     for _, item in ipairs(items) do
@@ -147,4 +232,4 @@ function TheAlcoholic.onRightClick(player, context, items)
 end
 
 Events.OnCreateUI.Add(onCreateUI)
-Events.OnFillInventoryObjectContextMenu.Add(TheAlcoholic.onRightClick)
+Events.OnFillInventoryObjectContextMenu.Add(TheAlcoholic.UI.onRightClick)
