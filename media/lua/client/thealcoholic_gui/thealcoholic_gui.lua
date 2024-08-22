@@ -1,149 +1,127 @@
-local playerWindow
-local statsWindow
-local visible = false
+TheAlcoholic.playerWindow = {}
+TheAlcoholic.statsWindow = {}
 
 local players = {}
-
-for i=0, getNumActivePlayers() - 1 do
-    local player = getSpecificPlayer(i)
-    local player_str = "Player "
-    print ("Alcohol GUI - Player: " .. player_str)
-    players[player_str] = i
-end
-
-
 
 local function openStats(_, player)
     local playerObj = getSpecificPlayer(player)
 
-    statsWindow["stress"]:setText(tostring(playerObj:getModData().AlcoholicStress))
-    statsWindow["tolerance"]:setText(tostring(playerObj:getModData().AlcoholicTolerance))
-    statsWindow["threshold"]:setText(tostring(playerObj:getModData().AlcoholicThreshold))
-    statsWindow["withdrawal"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalSickness))
-    statsWindow["tolerance_penalty"]:setText(tostring(playerObj:getModData().AlcoholicTolerancePenalty))
-    statsWindow["poison"]:setText(tostring(playerObj:getModData().AlcoholicPoisonDamageTotal))
-    statsWindow["time_since_last_drink"]:setText(tostring(playerObj:getModData().AlcoholicTimeSinceLastDrink))
-    statsWindow["drinks_per_day"]:setText(tostring(playerObj:getModData().AlcoholicDrinksPerDay))
-    statsWindow["drinks_total"]:setText(tostring(playerObj:getModData().AlcoholicDrinksTotal))
-    statsWindow["has_withdrawal_sickness"]:setText(tostring(playerObj:getModData().AlcoholicHasWithdrawalSickness))
-    statsWindow["withdrawal_phase"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalPhase))
-    statsWindow["has_drank"]:setText(tostring(playerObj:getModData().AlcoholicHasDrank))
+    if playerObj == nil then
+        return
+    end
 
-    statsWindow:setPositionPanel(playerWindow:getX() + playerWindow:getWidth(), playerWindow:getY())
-    statsWindow:open()
-end
+    TheAlcoholic.statsWindow["stress"]:setText(tostring(playerObj:getModData().AlcoholicStress))
+    TheAlcoholic.statsWindow["tolerance"]:setText(tostring(playerObj:getModData().AlcoholicTolerance))
+    TheAlcoholic.statsWindow["threshold"]:setText(tostring(playerObj:getModData().AlcoholicThreshold))
+    TheAlcoholic.statsWindow["withdrawal"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalSickness))
+    TheAlcoholic.statsWindow["tolerance_penalty"]:setText(tostring(playerObj:getModData().AlcoholicTolerancePenalty))
+    TheAlcoholic.statsWindow["poison"]:setText(tostring(playerObj:getModData().AlcoholicPoisonDamageTotal))
+    TheAlcoholic.statsWindow["time_since_last_drink"]:setText(tostring(playerObj:getModData().AlcoholicTimeSinceLastDrink))
+    TheAlcoholic.statsWindow["drinks_per_day"]:setText(tostring(playerObj:getModData().AlcoholicDrinksPerDay))
+    TheAlcoholic.statsWindow["drinks_total"]:setText(tostring(playerObj:getModData().AlcoholicDrinksTotal))
+    TheAlcoholic.statsWindow["has_withdrawal_sickness"]:setText(tostring(playerObj:getModData().AlcoholicHasWithdrawalSickness))
+    TheAlcoholic.statsWindow["withdrawal_phase"]:setText(tostring(playerObj:getModData().AlcoholicWithdrawalPhase))
+    TheAlcoholic.statsWindow["has_drank"]:setText(tostring(playerObj:getModData().AlcoholicHasDrank))
 
-local function openAlcoholGUI()
-    print("Open Alcohol GUI")
-    playerWindow:open()
-    visible = true
-end
-
-local function closeAlcoholGUI()
-    print("Close Alcohol GUI")
-    playerWindow:close()
-    visible = false
+    TheAlcoholic.statsWindow:setPositionPixel(TheAlcoholic.playerWindow:getX() + TheAlcoholic.playerWindow:getWidth(), TheAlcoholic.playerWindow:getY())
+    TheAlcoholic.statsWindow:open()
 end
 
 local function closeStats()
-    statsWindow:close()
+    TheAlcoholic.statsWindow:close()
 end
 
-local function onCreateUI()
-    playerWindow = NewUI()
-    playerWindow:setTitle("Local players")
-    playerWindow:setPercentageWidth(0.15)
-    playerWindow:addScrollList("list", players)
-
-    playerWindow["list"]:setOnMouseDownFunction(_, openStats)
-
-    playerWindow:saveLayout()
-
-    statsWindow = NewUI()
-    statsWindow:setTitle("Player Alcoholic Stats")
-    statsWindow:isSubUIOf(playerWindow)
-    statsWindow:setPercentageWidth(0.1)
-
-    statsWindow:addEmpty(_,_,_,10)
-    
-    statsWindow:addRichText("Alcoholic Stress Level", "Alcoholic Stress Level: ")
-    statsWindow:addRichText("stress", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-    
-    statsWindow:addRichText("Alcoholic Tolerance", "Alcoholic Tolerance: ")
-    statsWindow:addRichText("tolerance", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Alcoholic Threshold", "Alcoholic Threshold: ")
-    statsWindow:addRichText("threshold", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Withdrawal Sickness", "Withdrawal Sickness: ")
-    statsWindow:addRichText("withdrawal", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-    
-    statsWindow:addRichText("Alcoholic Tolerance Penalty", "Alcoholic Tolerance Penalty: ")
-    statsWindow:addRichText("tolerance_penalty", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Alcoholic Poison Level", "Alcoholic Poison Level: ")
-    statsWindow:addRichText("poison", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Time Since Last Drink", "Time Since Last Drink: ")
-    statsWindow:addRichText("time_since_last_drink", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Alcoholic Drinks/Day", "Alcoholic Drinks/Day: ")
-    statsWindow:addRichText("drinks_per_day", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Alcoholic Drinks Total", "Alcoholic Drinks Total: ")
-    statsWindow:addRichText("drinks_total", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Has Withdrawal Sickness", "Has Withdrawal Sickness: ")
-    statsWindow:addRichText("has_withdrawal_sickness", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Withdrawal Phase", "Withdrawal Phase: ")
-    statsWindow:addRichText("withdrawal_phase", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addRichText("Has Drank Alcohol", "Has Drank Alcohol Last Nour: ")
-    statsWindow:addRichText("has_drank", "")
-    statsWindow:addEmpty(_,_,_,10)
-    statsWindow:nextLine()
-
-    statsWindow:addButton("close_button", "Close", closeStats)
-    statsWindow:saveLayout()
-    statsWindow:close()
-    --playerWindow:close()
-end
-
-local function toggleAlcoholicGUI()
-    print("Toggled Alcoholic GUI")
-    visible = not visible
-    if visible
+local function updateInfo()
+    if TheAlcoholic.playerWindow:getIsVisible() == false
     then
-        playerWindow:open()
-    else
-        playerWindow:close()
+        for i = 0, getNumActivePlayers()-1 do
+            local player = getSpecificPlayer(i)
+            players[player:getName()] = i
+        end
     end
 end
 
-local function onKeyPressed(key)
+local function toggleAlcoholicGUI()
+    TheAlcoholic.playerWindow:toggle()
+end
+
+local function onCreateUI()
+    for i=0, 3 do
+        local player_str = "Player "..(i+1)
+        players[player_str] = i
+    end
+    TheAlcoholic.playerWindow = NewUI()
+    TheAlcoholic.playerWindow:setTitle("Local players")
+    TheAlcoholic.playerWindow:setWidthPercent(0.15)
+    TheAlcoholic.playerWindow:setPositionPercent(0.35, 0.15)
+    TheAlcoholic.playerWindow:addScrollList("list", players)
+
+    TheAlcoholic.playerWindow["list"]:setOnMouseDownFunction(_, openStats)
+
+    TheAlcoholic.playerWindow:saveLayout()
+
+    TheAlcoholic.statsWindow = NewUI()
+    TheAlcoholic.statsWindow:setTitle("Player Alcoholic Stats")
+    TheAlcoholic.statsWindow:isSubUIOf(TheAlcoholic.playerWindow)
+    TheAlcoholic.statsWindow:setWidthPercent(0.35)
+    
+    TheAlcoholic.statsWindow:addRichText("AlcoholicStressLevel", "Alcoholic Stress Level: ")
+    TheAlcoholic.statsWindow:addRichText("stress", "")
+    TheAlcoholic.statsWindow:nextLine()
+    
+    TheAlcoholic.statsWindow:addRichText("AlcoholicTolerance", "Alcoholic Tolerance: ")
+    TheAlcoholic.statsWindow:addRichText("tolerance", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("AlcoholicThreshold", "Alcoholic Threshold: ")
+    TheAlcoholic.statsWindow:addRichText("threshold", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("WithdrawalSickness", "Withdrawal Sickness: ")
+    TheAlcoholic.statsWindow:addRichText("withdrawal", "")
+    TheAlcoholic.statsWindow:nextLine()
+    
+    TheAlcoholic.statsWindow:addRichText("AlcoholicTolerancePenalty", "Alcoholic Tolerance Penalty: ")
+    TheAlcoholic.statsWindow:addRichText("tolerance_penalty", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("AlcoholicPoisonLevel", "Alcoholic Poison Level: ")
+    TheAlcoholic.statsWindow:addRichText("poison", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("TimeSinceLastDrink", "Time Since Last Drink: ")
+    TheAlcoholic.statsWindow:addRichText("time_since_last_drink", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("AlcoholicDrinksToday", "Alcoholic Drinks Today: ")
+    TheAlcoholic.statsWindow:addRichText("drinks_per_day", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("AlcoholicDrinksTotal", "Alcoholic Drinks Total: ")
+    TheAlcoholic.statsWindow:addRichText("drinks_total", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("HasWithdrawalSickness", "Has Withdrawal Sickness: ")
+    TheAlcoholic.statsWindow:addRichText("has_withdrawal_sickness", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("WithdrawalPhase", "Withdrawal Phase: ")
+    TheAlcoholic.statsWindow:addRichText("withdrawal_phase", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addRichText("HasDrankAlcohol", "Has Drank Alcohol Last Nour: ")
+    TheAlcoholic.statsWindow:addRichText("has_drank", "")
+    TheAlcoholic.statsWindow:nextLine()
+
+    TheAlcoholic.statsWindow:addButton("close_button", "Close", closeStats)
+    TheAlcoholic.statsWindow:addButton("close_all", "Close All", toggleAlcoholicGUI)
+    TheAlcoholic.statsWindow:saveLayout()
+    TheAlcoholic.statsWindow:close()
+    TheAlcoholic.playerWindow:close()
+    Events.OnTick.Remove(onCreateUI)
+end
+
+function TheAlcoholic.onKeyPressed(key)
     if key == "T"
     then
         toggleAlcoholicGUI()
@@ -151,19 +129,22 @@ local function onKeyPressed(key)
 end
 
 
-Events.OnKeyPressed.Add(onKeyPressed)
+Events.OnKeyPressed.Add(TheAlcoholic.onKeyPressed)
 
-local function onRightClick(player, context, items)
+function TheAlcoholic.onRightClick(player, context, items)
+    print("TheAlcoholic.onRightClick")
     items = ISInventoryPane.getActualItems(items)
+    local has_displayed = false
     for _, item in ipairs(items) do
         if item then
-            if item:isAlcoholic()
+            if item:isAlcoholic() == true and has_displayed == false
             then
-                context:addOption("Show Alcoholic Stats", player, openAlcoholGUI, item)
+                context:addOption("Show Alcoholic Stats", player, toggleAlcoholicGUI, item)
+                has_displayed = true
             end
         end
     end
 end
 
 Events.OnCreateUI.Add(onCreateUI)
-Events.OnFillInventoryObjectContextMenu.Add(onRightClick)
+Events.OnFillInventoryObjectContextMenu.Add(TheAlcoholic.onRightClick)
