@@ -1,0 +1,6 @@
+name=The Alcoholic [ GUI ]
+poster=poster.png
+icon=icon.png
+id=thealcoholic_gui
+description=The Alcoholic GUI to see some stats related to the mod. Debug mode will allow you to modify values as well.
+require=thealcoholic,UIAPI
