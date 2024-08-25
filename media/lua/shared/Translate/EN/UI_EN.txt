@@ -15,9 +15,10 @@ UI_EN = {
     UI_alcoholic_hda_label              =   "Has Drank Alcohol Last Hour: ", 
     UI_alcoholic_close_button           =   "Close",
     UI_alcoholic_close_all_button       =   "Close All",
-    UI_alcoholic_refresh_button         =   "Refresh Stats",
+    UI_alcoholic_refresh_button         =   "Refresh",
     UI_alcoholic_show_button            =   "Show Alcoholic Stats",
     UI_alcoholic_hide_button            =   "Hide Alcoholic Stats",
     UI_alcoholic_text_no_player         =   "No Player",
     UI_alcoholic_text_player            =   "Player",
+    UI_alcoholic_has_alcoholic_label    =   "Has Alcoholic Trait",
 }
