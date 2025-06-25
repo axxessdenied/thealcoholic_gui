@@ -66,7 +66,7 @@ local function updatePlayers()
     end
 end
 
-local function toggleAlcoholicGUI()
+function ToggleAlcoholicGUI()
     TheAlcoholic.UI.visible = not TheAlcoholic.UI.visible
     updatePlayers()
     TheAlcoholic.UI.playerWindow:toggle()
@@ -98,7 +98,7 @@ local function onCreateUI()
     TheAlcoholic.UI.playerWindow:nextLine()
     TheAlcoholic.UI.playerWindow:addButton("refresh_button", getText("UI_alcoholic_refresh_button"), refresh_players)
     TheAlcoholic.UI.playerWindow:nextLine()
-    TheAlcoholic.UI.playerWindow:addButton("close_button", getText("UI_alcoholic_close_button"), toggleAlcoholicGUI)
+    TheAlcoholic.UI.playerWindow:addButton("close_button", getText("UI_alcoholic_close_button"), ToggleAlcoholicGUI)
     TheAlcoholic.UI.playerWindow:setCollapse(true)
 
     TheAlcoholic.UI.playerWindow["list"]:setOnMouseDownFunction(_, openStats)
@@ -221,32 +221,16 @@ local function onCreateUI()
     TheAlcoholic.UI.statsWindow:addButton("refresh_button", getText("UI_alcoholic_refresh_button"), refresh_button_click)
     TheAlcoholic.UI.statsWindow:nextLine()   
     TheAlcoholic.UI.statsWindow:addButton("close_button", getText("UI_alcoholic_close_button"), closeStats)
-    TheAlcoholic.UI.statsWindow:addButton("close_all", getText("UI_alcoholic_close_all_button"), toggleAlcoholicGUI)
+    TheAlcoholic.UI.statsWindow:addButton("close_all", getText("UI_alcoholic_close_all_button"), ToggleAlcoholicGUI)
     TheAlcoholic.UI.statsWindow:saveLayout()
     TheAlcoholic.UI.statsWindow:close()
     TheAlcoholic.UI.playerWindow:close()
 end
 
-function TheAlcoholic.UI.onRightClickItem(player, context, items)
-    items = ISInventoryPane.getActualItems(items)
-    local has_displayed = false
-    for _, item in ipairs(items) do
-        if item then
-            if item:isAlcoholic() == true and has_displayed == false
-            then
-                local menu_str = TheAlcoholic.UI.visible and getText("UI_alcoholic_hide_button") or getText("UI_alcoholic_show_button")
-                context:addOption(menu_str, player, toggleAlcoholicGUI, item)
-                has_displayed = true
-            end
-        end
-    end
-end
-
 function TheAlcoholic.UI.onRightClick(player, context, worldObjects, test)
     local menu_str = TheAlcoholic.UI.visible and getText("UI_alcoholic_hide_button") or getText("UI_alcoholic_show_button")
-    context:addOption(menu_str, player, toggleAlcoholicGUI, worldObjects)
+    context:addOption(menu_str, player, ToggleAlcoholicGUI, worldObjects)
 end
 
 Events.OnCreateUI.Add(onCreateUI)
-Events.OnFillInventoryObjectContextMenu.Add(TheAlcoholic.UI.onRightClickItem)
 Events.OnFillWorldObjectContextMenu.Add(TheAlcoholic.UI.onRightClick)
